@@ -1,0 +1,104 @@
+# Python package
+# Create and test a Python package on multiple Python versions.
+# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
+# Trigger a build on pull to main.
+trigger:
+  branches:
+    include:
+      - main
+
+# Schedule a build every Monday at 4AM in order for period security checking.
+schedules:
+  - cron: 0 4 * * 1
+    displayName: 'Build every Mondat 4AM'
+    branches:
+      include:
+        - main
+    always: true
+
+pool:
+  vmImage: ubuntu-latest
+
+variables: 
+  trivyVersion: 0.28.0
+
+strategy:
+  matrix:
+    Python38:
+      python.version: '3.8'
+    Python39:
+      python.version: '3.9'
+    Python310:
+      python.version: '3.10'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+
+# Update and install requirements with pip-tools
+# pip install -U pip ensures the latest version of pip is used
+# use requirements.in to pin major libraries 
+- script: |
+    python -m pip install -U pip setuptools wheel pip-tools 
+    python -m piptools compile
+    pip install -r requirements.txt
+  displayName: 'Update and install requirements'
+
+# Static security code scan 
+- script: |
+    bandit -r src tests -n 3 --severity-level high --confidence-level medium
+  displayName: 'Run security linting'
+
+# Code linting
+- script: |
+    flake8 . --exit-zero
+  displayName: 'Run Flake 8 code linter'
+
+# License and dependency scan
+- task: WhiteSource@21
+  inputs:
+    cwd: '$(System.DefaultWorkingDirectory)'
+    projectName: 'ic-ventilation'
+  displayName: 'License and dependency scan'
+
+# Unit tests
+- script: |
+    pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
+  displayName: 'Run unit tests with pytest'
+
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFiles: '**/test-*.xml'
+    testRunTitle: 'Publish test results for Python $(python.version)'
+  displayName: 'Publish unit test results'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+  displayName: 'Report code coverage'
+
+# Install trivy for container security scans
+# Note that trivy can also do dependency scans: https://pythonspeed.com/articles/docker-python-security-scan/ 
+- script: |
+    sudo apt-get install -y rpm 
+    wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
+    sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
+    trivy -v
+  displayName: 'Install Trivy'
+
+#
+# Add docker build here
+#
+
+#- task: CmdLine@2
+#  displayName: 'Run Trivy security scan'
+#  inputs:
+#    script: |
+#      trivy image --exit-code 0 --severity LOW,MEDIUM <add containter from repo, e.g. janvandenbrand/removeme:latest>
+#      trivy image --exit-code 1 --severity HIGH,CRITICAL <add containter from repo, e.g. janvandenbrand/removeme:latest> 
