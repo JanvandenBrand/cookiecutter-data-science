@@ -62,6 +62,9 @@ To run a set of tests identified by a marker:
 # Project Organization
 ------------
 
+    ├── azure-pipelines.yaml <- CI pipeline specifications
+    ├── .env               <- environmental variables (not in version control)
+    ├── CHANGELOG.md       <- Changelog
     ├── LICENSE
     ├── Makefile           <- Makefile with commands like `make data` or `make train`
     ├── README.md          <- The top-level README for developers using this project.
