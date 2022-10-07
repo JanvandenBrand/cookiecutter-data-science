@@ -21,9 +21,12 @@ $ source ~/.your-repo/bin/activate
 ```
 
 3. install requirements  
-`$ make requirements`
-
-**NOTE:** If new packages are added during development, add them with a pinned version to _requirements.in_.  
+```
+$ mv requirements.txt requirements.in
+$ make requirements
+```
+**NOTE:** You will only need to run `mv requirements.txt requirements.in` when first installing the cookiecutter. 
+**NOTE 2:** If new packages are added during development, add them with a pinned version to _requirements.in_.  
 For example:  
 > numpy==1.22.2
 
