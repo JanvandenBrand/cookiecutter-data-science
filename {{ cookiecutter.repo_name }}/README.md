@@ -12,57 +12,63 @@ The $ sign indicated operation from the terminal as a non-root user.
 
 ## Installation
 1. Clone the repo:  
-> `$ git clone your-repo`
+`$ git clone your-repo`
 
 2. Set-up a virtual environment to isolate the project:
-> `$ python3 -m venv ~/.your-repo`
-> `$ source ~/.your-repo/bin/activate`
+``` 
+$ python3 -m venv ~/.your-repo
+$ source ~/.your-repo/bin/activate
+```
 
-3. install requirements
-> `$ make requirements`
+3. install requirements  
+`$ make requirements`
 
 **NOTE:** If new packages are added during development, add them with a pinned version to _requirements.in_.  
 For example:  
 > numpy==1.22.2
 
-4. Clean formatting using black
-> `$ make format`
+4. Clean formatting using black  
+`$ make format`
 
-5. Lint you code to adhere to style guides using flake8.
-> `$ make lint`
+5. Lint you code to adhere to style guides using flake8.  
+`$ make lint`
 
 
 ## Security checks, unit tests and license checks during development
 ### Security checks
-To perform a static security lint step run in the terminal:
-> $ bandit -r src tests -n 3 --severity-level high --confidence-level medium
+To perform a static security lint step run in the terminal:  
+`$ bandit -r src tests -n 3 --severity-level high --confidence-level medium`
 
 To perform a dynamic scan of the package container, first install [trivy v0.28.0](https://aquasecurity.github.io/trivy/v0.28.0/) from a bash terminal:  
-> $ sudo apt install -y rpm  
-> $ wget https://github.com/aquasecurity/trivy/releases/download/v0.28.0/trivy_0.28.0_Linux-64bit.deb  
-> $ sudo dpkg -i trivy_0.28.0_Linux-64bit.deb  
-> $ trivy -v  
+```
+$ sudo apt install -y rpm  
+$ wget https://github.com/aquasecurity/trivy/releases/download/v0.28.0/trivy_0.28.0_Linux-64bit.deb  
+$ sudo dpkg -i trivy_0.28.0_Linux-64bit.deb  
+$ trivy -v
+```  
 
-Next run a scan of an image from a repository, for example:
-> $ trivy image _path-to-your-image_
+Next run a scan of an image from a repository, for example:  
+`$ trivy image path-to-your-image`
 
 ### Unit Tests
 To run pytest from the project root, run in the terminal:
-> $ pytest tests -v
+`$ pytest tests -v`  
+pytest will look for all tests in the `tests` folder by searching for files named `test_*.py`.
 
-To run a specific test:
-> $ pytest tests/test.py::*test_name* -v
+To run a specific test:  
+`$ pytest tests/test_foo.py::test_name -v`
 
-To run a set of tests identified by a marker:
-> $ pytest tests/test.py -m -v marker 
+To run a set of tests identified by a marker:  
+`$ pytest tests/test_foo.py -v -m bar`
 
 ### Software license check
-> $ pip-licenses --format=markdown --with-urls  --output-file=./licenses.md
+`$ pip-licenses --format=markdown --with-urls  --output-file=./licenses.md`
 
 
 # Project Organization
 ------------
 
+```
     ├── azure-pipelines.yaml <- CI pipeline specifications for Azure Pipelines
     ├── .env               <- environmental variables (not in version control)
     ├── CHANGELOG.md       <- Changelog
@@ -125,7 +131,7 @@ To run a set of tests identified by a marker:
     │       └── test_visualize.py
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
-
+```
 
 --------
 
