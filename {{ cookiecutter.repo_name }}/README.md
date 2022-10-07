@@ -12,24 +12,25 @@ The $ sign indicated operation from the terminal as a non-root user.
 
 ## Installation
 1. Clone the repo:  
-> $ git clone _your-repo_
+> `$ git clone your-repo`
 
 2. Set-up a virtual environment to isolate the project:
-> $ python3 -m venv ~/._path-to-your-repo_
-> $ source ~/._path-to-your-repo_/bin/activate
+> `$ python3 -m venv ~/.your-repo`
+> `$ source ~/.your-repo/bin/activate`
 
 3. install requirements
-> $ make requirements
+> `$ make requirements`
 
 **NOTE:** If new packages are added during development, add them with a pinned version to _requirements.in_.  
 For example:  
 > numpy==1.22.2
 
-4. Lint you code to adhere to style guides.
-> make lint
+4. Clean formatting using black
+> `$ make format`
 
-5. Clean formatting
-> make format
+5. Lint you code to adhere to style guides using flake8.
+> `$ make lint`
+
 
 ## Security checks, unit tests and license checks during development
 ### Security checks
@@ -62,7 +63,7 @@ To run a set of tests identified by a marker:
 # Project Organization
 ------------
 
-    ├── azure-pipelines.yaml <- CI pipeline specifications
+    ├── azure-pipelines.yaml <- CI pipeline specifications for Azure Pipelines
     ├── .env               <- environmental variables (not in version control)
     ├── CHANGELOG.md       <- Changelog
     ├── LICENSE
@@ -107,6 +108,21 @@ To run a set of tests identified by a marker:
     │   │
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
     │       └── visualize.py
+    ├── tests                <- test code for use in this project. Pytest will look for this folder
+    │   │
+    │   ├── data           <- Scripts to test scripts in src/data. Pytest will look for file names 
+    |   |   |                 that   mirror those in src/
+    │   │   └── test_make_dataset.py
+    │   │
+    │   ├── features       
+    │   │   └── test_build_features.py
+    │   │
+    │   ├── models          
+    │   │   ├── test_predict_model.py
+    │   │   └── test_train_model.py
+    │   │
+    │   └── visualization  
+    │       └── test_visualize.py
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
