@@ -54,7 +54,7 @@ Next run a scan of an image from a repository, for example:
 `$ trivy image path-to-your-image`
 
 ### Unit Tests
-To run pytest from the project root, run in the terminal:
+To run pytest from the project root, run in the terminal:  
 `$ pytest tests -v`  
 pytest will look for all tests in the `tests` folder by searching for files named `test_*.py`.
 
@@ -63,6 +63,11 @@ To run a specific test:
 
 To run a set of tests identified by a marker:  
 `$ pytest tests/test_foo.py -v -m bar`
+
+To generate coverage report when running pytest from the terminal you need to run `pytest` with `coverage`:  
+`$ coverage run -m pytest /tests/test.py --cov=src/ --cov-report=xml` 
+
+In addition you can install [Coverage Gutters](https://marketplace.visualstudio.com/items?itemName=ryanluker.vscode-coverage-gutters). This will reveal uncovered lines in your source code after the test has been run.  
 
 ### Software license check
 `$ pip-licenses --format=markdown --with-urls  --output-file=./licenses.md`
