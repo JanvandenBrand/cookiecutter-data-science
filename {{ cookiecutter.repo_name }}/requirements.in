@@ -11,6 +11,7 @@ flake8==4.0.1
 python-dotenv==0.5.1
 black==22.1.0
 bandit==1.7.4
+tox==3.26.0
 
 {% if cookiecutter.python_interpreter != 'python3' %}
 
