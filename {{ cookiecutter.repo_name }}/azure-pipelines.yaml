@@ -28,10 +28,13 @@ strategy:
   matrix:
     Python38:
       python.version: '3.8'
+      tox.env: py38
     Python39:
       python.version: '3.9'
+      tox.env: py39
     Python310:
       python.version: '3.10'
+      tox.env: py310
 
 steps:
 - task: UsePythonVersion@0
@@ -43,32 +46,16 @@ steps:
 # pip install -U pip ensures the latest version of pip is used
 # use requirements.in to pin major libraries 
 - script: |
-    python -m pip install -U pip setuptools wheel pip-tools 
+    python -m pip install -U pip 
+    pip install setuptools wheel pip-tools 
     python -m piptools compile
     pip install -r requirements.txt
   displayName: 'Update and install requirements'
 
-# Static security code scan 
+# Test with Tox
 - script: |
-    bandit -r src tests -n 3 --severity-level high --confidence-level medium
-  displayName: 'Run security linting'
-
-# Code linting
-- script: |
-    flake8 . --exit-zero
-  displayName: 'Run Flake 8 code linter'
-
-# License and dependency scan
-- task: WhiteSource@21
-  inputs:
-    cwd: '$(System.DefaultWorkingDirectory)'
-    projectName: 'ic-ventilation'
-  displayName: 'License and dependency scan'
-
-# Unit tests
-- script: |
-    pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
-  displayName: 'Run unit tests with pytest'
+    tox -e $(tox.env)
+  displayName: 'Run security, linting and unit tests with Tox'
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()
@@ -83,14 +70,23 @@ steps:
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
   displayName: 'Report code coverage'
 
+
+# License and dependency scan
+- task: WhiteSource@21
+  inputs:
+    cwd: '$(System.DefaultWorkingDirectory)'
+    projectName: 'ic-ventilation'
+  displayName: 'License and dependency scan'
+
+
 # Install trivy for container security scans
 # Note that trivy can also do dependency scans: https://pythonspeed.com/articles/docker-python-security-scan/ 
-- script: |
-    sudo apt-get install -y rpm 
-    wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
-    sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
-    trivy -v
-  displayName: 'Install Trivy'
+#- script: |
+#    sudo apt-get install -y rpm 
+#    wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
+#    sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
+#    trivy -v
+#  displayName: 'Install Trivy'
 
 #
 # Add docker build here
